@@ -26,7 +26,7 @@
 		<footer class="card-footer">
 			Do not have an account? <a href="register" class=" text-primary-500">Register</a>
 			<p class="mt-4 text-xs text-center">
-				By creating an account and/or logging in, you agree to BangerBeats <span
+				By creating an account and/or logging in, you agree to RevNotes <span
 					class=" text-primary-500">Terms of Service</span
 				>
 				and
