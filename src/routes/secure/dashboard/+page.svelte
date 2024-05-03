@@ -1,9 +1,48 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import type { PageData } from './$types';
+	import { applyAction, deserialize, enhance } from '$app/forms';
+	import type { PageData, SubmitFunction } from './$types';
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import type { ActionResult } from '@sveltejs/kit';
+	import { invalidateAll } from '$app/navigation';
+
+	const modalStore = getModalStore();
+
 	export let data: PageData;
+
+	async function handleSubmit(event: { currentTarget: EventTarget & HTMLFormElement }) {
+		const data = new FormData(event.currentTarget);
+		const action = event.currentTarget.action;
+
+		const confirmModal: ModalSettings = {
+			type: 'confirm',
+			title: 'Please Confirm',
+			body: 'Are you sure you wish to delete this note?',
+			response: async (r: boolean) => {
+				if (r) {
+					const response = await fetch(action, {
+						method: 'POST',
+						body: data,
+						headers: {
+							'x-sveltekit-action': 'true'
+						}
+					});
+
+					const result: ActionResult = deserialize(await response.text());
+
+					if (result.type === 'success') {
+						// rerun all `load` functions, following the successful update
+						await invalidateAll();
+					}
+
+					applyAction(result);
+				}
+			}
+		};
+
+		modalStore.trigger(confirmModal);
+	}
 </script>
 
 <div class="container mx-auto px-3 space-y-4">
@@ -44,7 +83,7 @@
 						<p class="mt-2">{note.content}</p>
 					</div>
 					<div>
-						<form method="POST" action="?/deletenote" use:enhance>
+						<form method="POST" action="?/deletenote" on:submit|preventDefault={handleSubmit}>
 							<input type="text" value={note.id} hidden name="id" />
 							<button class="btn-icon variant-filled">
 								<Fa icon={faTrash} />
@@ -54,5 +93,7 @@
 				</div>
 			</section>
 		</div>
+	{:else}
+		<p>No Notes!</p>
 	{/each}
 </div>
