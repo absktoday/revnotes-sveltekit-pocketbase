@@ -1,0 +1,58 @@
+<script lang="ts">
+	import { enhance } from '$app/forms';
+	import type { PageData } from './$types';
+	import Fa from 'svelte-fa';
+	import { faTrash } from '@fortawesome/free-solid-svg-icons';
+	export let data: PageData;
+</script>
+
+<div class="container mx-auto px-3 space-y-4">
+	<form method="POST" action="?/addnote" class="card mt-10" use:enhance>
+		<section class="p-4 space-y-4">
+			<label class="label">
+				<span>Title</span>
+				<input name="title" class="input" type="text" placeholder="Optional" />
+			</label>
+			<label class="label">
+				<span>Note</span>
+				<textarea
+					class="textarea"
+					rows="4"
+					placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit."
+					name="content"
+					required
+				/>
+			</label>
+		</section>
+
+		<footer class="card-footer">
+			<button class="btn btn-sm variant-filled">Add Note</button>
+		</footer>
+	</form>
+	<div class="flex justify-between items-center">
+		<h4 class="h4">All Notes</h4>
+	</div>
+
+	{#each data.resultList as note}
+		<div class="card card-hover">
+			<section class="p-4">
+				<div class="flex justify-between items-center">
+					<div>
+						<h5 class="h5">
+							{note.title}
+						</h5>
+						<p class="mt-2">{note.content}</p>
+					</div>
+					<div>
+						<form method="POST" action="?/deletenote" use:enhance>
+							<input type="text" value={note.id} hidden name="id" />
+							<button class="btn-icon variant-filled">
+								<Fa icon={faTrash} />
+							</button>
+						</form>
+					</div>
+				</div>
+			</section>
+		</div>
+	{/each}
+</div>
