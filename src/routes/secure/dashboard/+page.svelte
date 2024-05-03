@@ -76,11 +76,14 @@
 		<div class="card card-hover">
 			<section class="p-4">
 				<div class="flex justify-between items-center">
-					<div>
-						<h5 class="h5">
-							{note.title}
-						</h5>
-						<p class="mt-2">{note.content}</p>
+					<div class="flex flex-col gap-4">
+						{#if note.title}
+							<h5 class="h5">
+								{note.title}
+							</h5>
+						{/if}
+
+						<p>{note.content}</p>
 					</div>
 					<div>
 						<form method="POST" action="?/deletenote" on:submit|preventDefault={handleSubmit}>
