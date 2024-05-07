@@ -71,32 +71,33 @@
 	<div class="flex justify-between items-center">
 		<h4 class="h4">All Notes</h4>
 	</div>
+	<div class="grid grid-cols-3 gap-3">
+		{#each data.resultList as note}
+			<div class="card card-hover">
+				<section class="p-4">
+					<div class="flex justify-between items-center">
+						<div class="flex flex-col gap-4">
+							{#if note.title}
+								<h5 class="h5">
+									{note.title}
+								</h5>
+							{/if}
 
-	{#each data.resultList as note}
-		<div class="card card-hover">
-			<section class="p-4">
-				<div class="flex justify-between items-center">
-					<div class="flex flex-col gap-4">
-						{#if note.title}
-							<h5 class="h5">
-								{note.title}
-							</h5>
-						{/if}
-
-						<p>{note.content}</p>
+							<p>{note.content}</p>
+						</div>
+						<div>
+							<form method="POST" action="?/deletenote" on:submit|preventDefault={handleSubmit}>
+								<input type="text" value={note.id} hidden name="id" />
+								<button class="btn-icon variant-filled">
+									<Fa icon={faTrash} />
+								</button>
+							</form>
+						</div>
 					</div>
-					<div>
-						<form method="POST" action="?/deletenote" on:submit|preventDefault={handleSubmit}>
-							<input type="text" value={note.id} hidden name="id" />
-							<button class="btn-icon variant-filled">
-								<Fa icon={faTrash} />
-							</button>
-						</form>
-					</div>
-				</div>
-			</section>
-		</div>
-	{:else}
-		<p>No Notes!</p>
-	{/each}
+				</section>
+			</div>
+		{:else}
+			<p>No Notes!</p>
+		{/each}
+	</div>
 </div>

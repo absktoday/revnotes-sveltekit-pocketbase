@@ -25,5 +25,9 @@
 	initializeStores();
 </script>
 
+<svelte:head>
+	<title>RevNotes</title>
+</svelte:head>
+
 <Modal />
 <slot />

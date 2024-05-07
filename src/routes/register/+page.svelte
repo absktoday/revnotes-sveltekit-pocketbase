@@ -17,14 +17,9 @@
 		<form method="POST" class="p-4 space-y-5" use:enhance>
 			{#if form?.error}
 				<aside class="alert variant-ghost-error">
-					<!-- Icon -->
-					<!-- <div>(icon)</div> -->
-					<!-- Message -->
 					<div class="alert-message">
 						<p>{form?.message}</p>
 					</div>
-					<!-- Actions -->
-					<!-- <div class="alert-actions">(buttons)</div> -->
 				</aside>
 			{/if}
 			<label class="label">
