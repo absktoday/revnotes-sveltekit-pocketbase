@@ -71,7 +71,7 @@
 	<div class="flex justify-between items-center">
 		<h4 class="h4">All Notes</h4>
 	</div>
-	<div class="grid grid-cols-3 gap-3">
+	<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
 		{#each data.resultList as note}
 			<div class="card card-hover">
 				<section class="p-4">
