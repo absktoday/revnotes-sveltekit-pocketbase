@@ -1,6 +1,24 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-
+import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
+import WebAuthnConfig from '$lib/server/config/rp_config';
+import {
+	// Authentication
+	generateAuthenticationOptions,
+	// Registration
+	generateRegistrationOptions,
+	verifyAuthenticationResponse,
+	verifyRegistrationResponse
+} from '@simplewebauthn/server';
+import type {
+	GenerateAuthenticationOptionsOpts,
+	GenerateRegistrationOptionsOpts,
+	VerifiedAuthenticationResponse,
+	VerifiedRegistrationResponse,
+	VerifyAuthenticationResponseOpts,
+	VerifyRegistrationResponseOpts
+} from '@simplewebauthn/server';
+import generatePassword from '$lib/server/genpass';
 export const load: PageServerLoad = async ({ locals }) => {
 	if (locals.user) redirect(307, '/secure/dashboard');
 };
@@ -8,26 +26,28 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions = {
 	default: async ({ request, locals: { pb } }) => {
 		const formData = await request.formData();
-		const email = formData.get('email') as string;
 		const username = formData.get('username') as string;
-		const password = formData.get('password') as string;
-		const confirmPassword = formData.get('confirm_password') as String;
 
-		if (password !== confirmPassword)
-			return fail(400, { error: true, message: "Passwords don't match" });
+		const options: PublicKeyCredentialCreationOptionsJSON = await generateRegistrationOptions({
+			rpName: WebAuthnConfig.rpName,
+			rpID: WebAuthnConfig.rpID,
+			userName: username,
+			// See "Guiding use of authenticators via authenticatorSelection" below
+			authenticatorSelection: {
+				// Defaults
+				residentKey: 'preferred',
+				userVerification: 'preferred'
+			}
+		});
 
 		// example create data
 		const data = {
 			username: username,
-			email: email,
-			emailVisibility: true,
-			password: password,
-			passwordConfirm: confirmPassword,
-			name: username
+			options: options
 		};
 
-		const record = await pb.collection('users').create(data);
+		const record = await pb.collection('webauthn_options').create(data);
 
-		return redirect(307, '/signin');
+		return { options };
 	}
 } satisfies Actions;

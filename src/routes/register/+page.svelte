@@ -1,7 +1,38 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { ActionData } from './$types';
+	import { startRegistration } from '@simplewebauthn/browser';
+	import type { ActionData, SubmitFunction } from './$types';
 	export let form: ActionData;
+	let username: string;
+	const submitForm: SubmitFunction = () => {
+		return async ({ result, update }) => {
+			switch (result.type) {
+				case 'error':
+					console.log('error');
+					break;
+				case 'success':
+					console.log('Form Success');
+
+					if (result.data) {
+						let attResp = await startRegistration(result.data.options);
+
+						const regResponse = await fetch('/api/auth/reg', {
+							method: 'POST',
+							body: JSON.stringify({
+								username,
+								attResp
+							}),
+							headers: {
+								'Content-Type': 'application/json'
+							}
+						});
+
+						console.log('RegResp: ', await regResponse.json());
+					}
+			}
+			await update();
+		};
+	};
 </script>
 
 <svelte:head>
@@ -14,35 +45,24 @@
 			<h1 class="h2">Register</h1>
 		</header>
 
-		<form method="POST" class="p-4 space-y-5" use:enhance>
-			{#if form?.error}
+		<form method="POST" class="p-4 space-y-5" use:enhance={submitForm}>
+			<!-- {#if form?.error}
 				<aside class="alert variant-ghost-error">
 					<div class="alert-message">
 						<p>{form?.message}</p>
 					</div>
 				</aside>
-			{/if}
+			{/if} -->
 			<label class="label">
 				<span>Username</span>
-				<input class="input" name="username" type="text" placeholder="john.doe" required />
-			</label>
-			<label class="label">
-				<span>Email</span>
 				<input
 					class="input"
-					name="email"
-					type="email"
-					placeholder="john.doe@example.com"
+					name="username"
+					type="text"
+					placeholder="john.doe"
+					bind:value={username}
 					required
 				/>
-			</label>
-			<label class="label">
-				<span>Password</span>
-				<input class="input" name="password" type="password" placeholder="" required />
-			</label>
-			<label class="label">
-				<span>Confirm Password</span>
-				<input class="input" name="confirm_password" type="password" placeholder="" required />
 			</label>
 
 			<button type="submit" class="btn variant-filled w-full">Register</button>
