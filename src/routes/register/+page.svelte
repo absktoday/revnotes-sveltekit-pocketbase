@@ -36,15 +36,6 @@
 					required
 				/>
 			</label>
-			<label class="label">
-				<span>Password</span>
-				<input class="input" name="password" type="password" placeholder="" required />
-			</label>
-			<label class="label">
-				<span>Confirm Password</span>
-				<input class="input" name="confirm_password" type="password" placeholder="" required />
-			</label>
-
 			<button type="submit" class="btn variant-filled w-full">Register</button>
 		</form>
 
