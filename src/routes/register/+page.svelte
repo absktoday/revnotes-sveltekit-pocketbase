@@ -4,11 +4,8 @@
 	export let form: ActionData;
 	import { startRegistration } from '@simplewebauthn/browser';
 
-	let error: any;
-
 	// Form Data
 	let username: string;
-	let email: string;
 
 	const submitForm: SubmitFunction = () => {
 		return async ({ result, update }) => {
@@ -34,9 +31,7 @@
 							'Content-Type': 'application/json'
 						}
 					});
-
 					console.log('validationResponse ', await validationResponse.json());
-
 					break;
 			}
 			await update();

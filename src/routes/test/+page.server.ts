@@ -5,17 +5,10 @@ import generator from 'generate-password';
 
 export const actions = {
 	default: async ({ request, locals: { pb }, cookies }) => {
-		const password = generator.generate({
-			length: 24,
-			numbers: true
-		});
+		const recosrd = await pb.collection('users').getFirstListItem('email="pb@absk.io"');
 
-		const data = {
-			username: 'asdasd',
-			password,
-			passwordConfirm: password
-		};
+		console.log('re ', recosrd);
 
-		const userRecord = await pb.collection('users').create(data);
+		// if (recosrd) return fail(400, { error: true, message: 'Username already registered' });
 	}
 } satisfies Actions;

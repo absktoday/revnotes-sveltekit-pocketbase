@@ -10,8 +10,8 @@ import type {
 	PublicKeyCredentialCreationOptionsJSON,
 	RegistrationResponseJSON
 } from '@simplewebauthn/types';
-import generator from 'generate-password';
 import { fromUint8Array } from 'js-base64';
+import generatePassword from '$lib';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
@@ -39,10 +39,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 		if (verified) {
 			// example create data
 
-			const password = generator.generate({
-				length: 24,
-				numbers: true
-			});
+			let password = generatePassword(24);
 
 			const data = {
 				username,

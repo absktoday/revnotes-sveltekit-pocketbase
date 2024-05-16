@@ -5,7 +5,7 @@ const webauthn = {
 	/**
 	 * Human-readable title for your website
 	 */
-	rpName: 'RevNotes',
+	rpName: 'ABSK',
 	/**
 	 * A unique identifier for your website. 'localhost' is okay for
 	 * local dev
