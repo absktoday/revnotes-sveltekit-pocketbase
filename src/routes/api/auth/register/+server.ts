@@ -1,4 +1,4 @@
-import kv from '$lib/kv';
+// import kv from '$lib/kv';
 import { webauthn } from '$lib/server/webauthn';
 import {
 	verifyRegistrationResponse,
@@ -12,13 +12,13 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 	const username = data.username;
 	const publicKeyCredential = data.publicKeyCredential;
 
-	const options = kv.get(username);
+	// const options = kv.get(username);
 
-	if (!options) return error(400, "Options can't be empty");
+	// if (!options) return error(400, "Options can't be empty");
 
-	console.log('Options from kv ', options);
+	// console.log('Options from kv ', options);
 
-	// const record = await pb.collection('webauthn_options').getFirstListItem(`username="${username}"`);
+	const record = await pb.collection('webauthn_options').getFirstListItem(`username="${username}"`);
 
 	// console.log('Options for ', record);
 
@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 	try {
 		verification = await verifyRegistrationResponse({
 			response: publicKeyCredential,
-			expectedChallenge: options.challenge,
+			expectedChallenge: record.options.challenge,
 			expectedOrigin: url.origin,
 			expectedRPID: webauthn.rpID
 		});
