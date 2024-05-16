@@ -1,7 +1,47 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { ActionData } from './$types';
+	import type { ActionData, SubmitFunction } from './$types';
 	export let form: ActionData;
+	import { startRegistration } from '@simplewebauthn/browser';
+
+	let error: any;
+
+	// Form Data
+	let username: string;
+	let email: string;
+
+	const submitForm: SubmitFunction = () => {
+		return async ({ result, update }) => {
+			switch (result.type) {
+				case 'error':
+					console.log('error');
+					break;
+				case 'success':
+					console.log('result ');
+					let publicKeyCredential = await startRegistration(result.data!);
+
+					console.log('public key creds ', publicKeyCredential);
+
+					console.log('username ', username);
+
+					const validationResponse = await fetch('/api/auth/register', {
+						method: 'POST',
+						body: JSON.stringify({
+							username,
+							publicKeyCredential
+						}),
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					});
+
+					console.log('validationResponse ', await validationResponse.json());
+
+					break;
+			}
+			await update();
+		};
+	};
 </script>
 
 <svelte:head>
@@ -14,7 +54,7 @@
 			<h1 class="h2">Register</h1>
 		</header>
 
-		<form method="POST" class="p-4 space-y-5" use:enhance>
+		<form method="POST" class="p-4 space-y-5" use:enhance={submitForm}>
 			{#if form?.error}
 				<aside class="alert variant-ghost-error">
 					<div class="alert-message">
@@ -24,13 +64,21 @@
 			{/if}
 			<label class="label">
 				<span>Username</span>
-				<input class="input" name="username" type="text" placeholder="john.doe" required />
+				<input
+					class="input"
+					name="username"
+					bind:value={username}
+					type="text"
+					placeholder="john.doe"
+					required
+				/>
 			</label>
 			<label class="label">
 				<span>Email</span>
 				<input
 					class="input"
 					name="email"
+					bind:value={email}
 					type="email"
 					placeholder="john.doe@example.com"
 					required

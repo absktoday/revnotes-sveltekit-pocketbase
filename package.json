@@ -49,6 +49,7 @@
 	"dependencies": {
 		"@floating-ui/dom": "1.6.4",
 		"@fortawesome/free-solid-svg-icons": "^6.5.2",
+		"@heyputer/kv.js": "^0.1.6",
 		"@simplewebauthn/browser": "^10.0.0",
 		"@simplewebauthn/server": "^10.0.0",
 		"highlight.js": "11.9.0",

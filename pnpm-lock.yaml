@@ -14,6 +14,9 @@ importers:
       '@fortawesome/free-solid-svg-icons':
         specifier: ^6.5.2
         version: 6.5.2
+      '@heyputer/kv.js':
+        specifier: ^0.1.6
+        version: 0.1.6
       '@simplewebauthn/browser':
         specifier: ^10.0.0
         version: 10.0.0
@@ -300,6 +303,9 @@ packages:
 
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
+
+  '@heyputer/kv.js@0.1.6':
+    resolution: {integrity: sha512-p/aYYHVG6wp/z33rfq2bmc7KgfBP6pE7urnQcnAm8xTN3+U0i2hItXH7bBTJOgsmjqk59I1YUOzcjOTlLrZ26w==}
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -2051,6 +2057,10 @@ snapshots:
       '@fortawesome/fontawesome-common-types': 6.5.2
 
   '@hexagon/base64@1.1.28': {}
+
+  '@heyputer/kv.js@0.1.6':
+    dependencies:
+      minimatch: 9.0.4
 
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
