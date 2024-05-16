@@ -1,39 +1,89 @@
-// import kv from '$lib/kv';
 import { webauthn } from '$lib/server/webauthn';
 import {
 	verifyRegistrationResponse,
 	type VerifiedRegistrationResponse
 } from '@simplewebauthn/server';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
+import { ClientResponseError } from 'pocketbase';
+import type { Passkey } from '../../../../ambient';
+import type {
+	PublicKeyCredentialCreationOptionsJSON,
+	RegistrationResponseJSON
+} from '@simplewebauthn/types';
+import generator from 'generate-password';
+import { fromUint8Array } from 'js-base64';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
 
 	const username = data.username;
-	const publicKeyCredential = data.publicKeyCredential;
+	const publicKeyCredential: RegistrationResponseJSON = data.publicKeyCredential;
 
-	// const options = kv.get(username);
-
-	// if (!options) return error(400, "Options can't be empty");
-
-	// console.log('Options from kv ', options);
-
-	const record = await pb.collection('webauthn_options').getFirstListItem(`username="${username}"`);
-
-	// console.log('Options for ', record);
-
-	let verification: VerifiedRegistrationResponse;
 	try {
-		verification = await verifyRegistrationResponse({
+		const options: PublicKeyCredentialCreationOptionsJSON = (
+			await pb.collection('webauthn_options').getFirstListItem(`username="${username}"`)
+		).options;
+
+		let verification = await verifyRegistrationResponse({
 			response: publicKeyCredential,
-			expectedChallenge: record.options.challenge,
+			expectedChallenge: options.challenge,
 			expectedOrigin: url.origin,
 			expectedRPID: webauthn.rpID
 		});
 
-		console.log(verification);
-	} catch (error) {
-		console.error(error);
+		let { verified, registrationInfo } = verification;
+
+		const { credentialID, credentialPublicKey, counter, credentialDeviceType, credentialBackedUp } =
+			registrationInfo!;
+
+		if (verified) {
+			// example create data
+
+			const password = generator.generate({
+				length: 24,
+				numbers: true
+			});
+
+			const data = {
+				username,
+				password,
+				passwordConfirm: password
+			};
+
+			const userRecord = await pb.collection('users').create(data);
+
+			const newPasskey: Passkey = {
+				// `user` here is from Step 2
+				user: userRecord.id,
+				// Created by `generateRegistrationOptions()` in Step 1
+				webauthnUserID: options.user.id,
+				// A unique identifier for the credential
+				cred_id: credentialID,
+				// The public key bytes, used for subsequent authentication signature verification
+				publicKey: fromUint8Array(credentialPublicKey),
+				// The number of times the authenticator has been used on this site so far
+				counter,
+				// Whether the passkey is single-device or multi-device
+				deviceType: credentialDeviceType,
+				// Whether the passkey has been backed up in some way
+				backedUp: credentialBackedUp,
+				// `body` here is from Step 2
+				transports: publicKeyCredential.response.transports
+			};
+
+			console.log('Passkey ', newPasskey);
+
+			const passkeyRecord = await pb.collection('passkeys').create(newPasskey);
+		}
+	} catch (e) {
+		console.error(e);
+		if (e instanceof ClientResponseError) {
+			console.log('Pocketbase error ', e);
+			error(400, 'Request invalid. Please try again');
+		}
+		if (e instanceof Error) {
+			error(400, e.message);
+		}
 	}
 
 	return json({ success: true });

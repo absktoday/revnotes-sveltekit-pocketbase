@@ -73,17 +73,6 @@
 					required
 				/>
 			</label>
-			<label class="label">
-				<span>Email</span>
-				<input
-					class="input"
-					name="email"
-					bind:value={email}
-					type="email"
-					placeholder="john.doe@example.com"
-					required
-				/>
-			</label>
 			<button type="submit" class="btn variant-filled w-full">Register</button>
 		</form>
 

@@ -14,18 +14,21 @@ importers:
       '@fortawesome/free-solid-svg-icons':
         specifier: ^6.5.2
         version: 6.5.2
-      '@heyputer/kv.js':
-        specifier: ^0.1.6
-        version: 0.1.6
       '@simplewebauthn/browser':
         specifier: ^10.0.0
         version: 10.0.0
       '@simplewebauthn/server':
         specifier: ^10.0.0
         version: 10.0.0
+      generate-password:
+        specifier: ^1.7.1
+        version: 1.7.1
       highlight.js:
         specifier: 11.9.0
         version: 11.9.0
+      js-base64:
+        specifier: ^3.7.7
+        version: 3.7.7
       pocketbase:
         specifier: ^0.21.2
         version: 0.21.2
@@ -303,9 +306,6 @@ packages:
 
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
-
-  '@heyputer/kv.js@0.1.6':
-    resolution: {integrity: sha512-p/aYYHVG6wp/z33rfq2bmc7KgfBP6pE7urnQcnAm8xTN3+U0i2hItXH7bBTJOgsmjqk59I1YUOzcjOTlLrZ26w==}
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -1013,6 +1013,9 @@ packages:
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
 
+  generate-password@1.7.1:
+    resolution: {integrity: sha512-9bVYY+16m7W7GczRBDqXE+VVuCX+bWNrfYKC/2p2JkZukFb2sKxT6E3zZ3mJGz7GMe5iRK0A/WawSL3jQfJuNQ==}
+
   get-func-name@2.0.2:
     resolution: {integrity: sha512-8vXOvuE167CtIc3OyItco7N/dpRtBbYOsPsXCz7X/PMnlGjYjSGuZJgM1Y7mmew7BKf9BqvLX2tnOVy1BBUsxQ==}
 
@@ -1141,6 +1144,9 @@ packages:
   jiti@1.21.0:
     resolution: {integrity: sha512-gFqAIbuKyyso/3G2qhiO2OM6shY6EPP/R0+mkDbyspxKazh8BXDC5FiFsUjlczgdNz/vfra0da2y+aHrusLG/Q==}
     hasBin: true
+
+  js-base64@3.7.7:
+    resolution: {integrity: sha512-7rCnleh0z2CkXhH67J8K1Ytz0b2Y+yxTPL+/KOJoa20hfnVQ/3/T6W/KflYI4bRHRagNeXeU2bkNGI3v1oS/lw==}
 
   js-tokens@9.0.0:
     resolution: {integrity: sha512-WriZw1luRMlmV3LGJaR6QOJjWwgLUTf89OwT2lUOyjX2dJGBwgmIkbcz+7WFZjrZM635JOIR517++e/67CP9dQ==}
@@ -2058,10 +2064,6 @@ snapshots:
 
   '@hexagon/base64@1.1.28': {}
 
-  '@heyputer/kv.js@0.1.6':
-    dependencies:
-      minimatch: 9.0.4
-
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
       '@humanwhocodes/object-schema': 2.0.3
@@ -2863,6 +2865,8 @@ snapshots:
 
   function-bind@1.1.2: {}
 
+  generate-password@1.7.1: {}
+
   get-func-name@2.0.2: {}
 
   get-stream@8.0.1: {}
@@ -2978,6 +2982,8 @@ snapshots:
       '@pkgjs/parseargs': 0.11.0
 
   jiti@1.21.0: {}
+
+  js-base64@3.7.7: {}
 
   js-tokens@9.0.0: {}
 
