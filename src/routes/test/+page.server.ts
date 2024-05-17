@@ -1,7 +1,5 @@
-import signInUserViaAdmin from '$lib/server/admin_pb';
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import generator from 'generate-password';
 
 export const actions = {
 	default: async ({ request, locals: { pb }, cookies }) => {
