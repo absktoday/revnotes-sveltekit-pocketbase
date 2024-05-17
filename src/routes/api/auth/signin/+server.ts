@@ -15,7 +15,6 @@ import {
 	savePassKey,
 	signInUserViaAdmin
 } from '$lib/server/admin_pb';
-import generatePassword from '$lib/server';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
@@ -53,14 +52,6 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 		const { newCounter } = authenticationInfo!;
 
 		if (verified) {
-			let password = generatePassword(24);
-
-			const data = {
-				username,
-				password,
-				passwordConfirm: password
-			};
-
 			const userAuth = await signInUserViaAdmin(passkey.user);
 
 			console.log('user Auth ', userAuth);

@@ -9,7 +9,7 @@ import type {
 } from '@simplewebauthn/types';
 import { fromUint8Array } from 'js-base64';
 import { deleteWebAuthnOptions, savePassKey } from '$lib/server/admin_pb';
-import generatePassword from '$lib/server';
+import generatePassword from '$lib';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
