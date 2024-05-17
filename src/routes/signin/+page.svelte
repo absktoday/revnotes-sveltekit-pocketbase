@@ -24,16 +24,17 @@
 
 					console.log('pub ', publicKeyCredential);
 
-					// await fetch('/api/auth/register', {
-					// 	method: 'POST',
-					// 	body: JSON.stringify({
-					// 		username,
-					// 		publicKeyCredential
-					// 	}),
-					// 	headers: {
-					// 		'Content-Type': 'application/json'
-					// 	}
-					// });
+					await fetch('/api/auth/signin', {
+						method: 'POST',
+						body: JSON.stringify({
+							username,
+							nonce,
+							publicKeyCredential
+						}),
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					});
 
 					// const t: ToastSettings = {
 					// 	message: 'Registration Successful.',

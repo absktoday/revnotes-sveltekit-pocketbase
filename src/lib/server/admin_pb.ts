@@ -28,12 +28,14 @@ const usernameExists = async (username: string): Promise<boolean> => {
 
 // Sign In User
 const signInUserViaAdmin = async (
-	username: string
+	userId: string
 ): Promise<RecordAuthResponse<RecordModel> | undefined> => {
 	try {
+		const record = await adminPb.collection('users').getOne(userId);
+
 		let auth: RecordAuthResponse<RecordModel> = await adminPb.send('getTokenForUser', {
 			method: 'POST',
-			body: { username }
+			body: { username: record.username }
 		});
 
 		return auth;
@@ -50,8 +52,12 @@ const deleteWebAuthnOptions = async (webauthnOptionRecordId: string) => {
 	await adminPb.collection('webauthn_options').delete(webauthnOptionRecordId);
 };
 
-const savePassKey = async (passkey: Passkey) => {
+const savePassKey = async (passkey: {}) => {
 	await adminPb.collection('passkeys').create(passkey);
+};
+
+const getUserPasskey = async (credId: string): Promise<Passkey> => {
+	return await adminPb.collection('passkeys').getFirstListItem(`cred_id="${credId}"`);
 };
 
 export {
@@ -59,5 +65,6 @@ export {
 	signInUserViaAdmin,
 	saveWebAuthnOptions,
 	deleteWebAuthnOptions,
-	savePassKey
+	savePassKey,
+	getUserPasskey
 };

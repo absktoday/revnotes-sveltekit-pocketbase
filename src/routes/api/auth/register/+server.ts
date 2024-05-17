@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 
 			const userRecord = await pb.collection('users').create(data);
 
-			const newPasskey: Passkey = {
+			const newPasskeyData = {
 				// `user` here is from Step 2
 				user: userRecord.id,
 				// Created by `generateRegistrationOptions()` in Step 1
@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 				transports: publicKeyCredential.response.transports
 			};
 
-			savePassKey(newPasskey); // add passkey to db
+			savePassKey(newPasskeyData); // add passkey to db
 
 			deleteWebAuthnOptions(webAuthnOptionsRecord.id); // remove the options from webauthn_options table
 		}
