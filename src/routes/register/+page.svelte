@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import type { ActionData, SubmitFunction } from './$types';
 	export let form: ActionData;
 	import { startRegistration } from '@simplewebauthn/browser';
+	import { goto } from '$app/navigation';
 
-	let error: any;
+	const toastStore = getToastStore();
 
 	// Form Data
 	let username: string;
-	let email: string;
 
 	const submitForm: SubmitFunction = () => {
 		return async ({ result, update }) => {
@@ -19,12 +20,7 @@
 				case 'success':
 					console.log('result ');
 					let publicKeyCredential = await startRegistration(result.data!);
-
-					console.log('public key creds ', publicKeyCredential);
-
-					console.log('username ', username);
-
-					const validationResponse = await fetch('/api/auth/register', {
+					await fetch('/api/auth/register', {
 						method: 'POST',
 						body: JSON.stringify({
 							username,
@@ -35,8 +31,17 @@
 						}
 					});
 
-					console.log('validationResponse ', await validationResponse.json());
+					const t: ToastSettings = {
+						message: 'Registration Successful.',
+						background: 'variant-filled-success',
+						action: {
+							label: 'Sign In',
+							response: () => goto('/signin')
+						},
+						hoverable: true
+					};
 
+					toastStore.trigger(t);
 					break;
 			}
 			await update();

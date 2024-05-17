@@ -5,7 +5,9 @@ import type {
 	Base64URLString
 } from '@simplewebauthn/types';
 
-type Passkey = {
+import type { RecordModel } from 'pocketbase';
+
+interface Passkey extends RecordModel {
 	// SQL: Store as `TEXT`. Index this column
 	cred_id: Base64URLString;
 	// SQL: Store raw bytes as `BYTEA`/`BLOB`/etc...
@@ -27,4 +29,4 @@ type Passkey = {
 	// SQL: `VARCHAR(255)` and store string array as a CSV string
 	// Ex: ['ble' | 'cable' | 'hybrid' | 'internal' | 'nfc' | 'smart-card' | 'usb']
 	transports?: AuthenticatorTransportFuture[];
-};
+}

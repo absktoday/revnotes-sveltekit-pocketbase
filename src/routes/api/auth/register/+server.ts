@@ -1,8 +1,5 @@
 import { webauthn } from '$lib/server/webauthn';
-import {
-	verifyRegistrationResponse,
-	type VerifiedRegistrationResponse
-} from '@simplewebauthn/server';
+import { verifyRegistrationResponse } from '@simplewebauthn/server';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 import type { Passkey } from '../../../../ambient';
@@ -10,8 +7,9 @@ import type {
 	PublicKeyCredentialCreationOptionsJSON,
 	RegistrationResponseJSON
 } from '@simplewebauthn/types';
-import generator from 'generate-password';
 import { fromUint8Array } from 'js-base64';
+import generatePassword from '$lib';
+import { deleteWebAuthnOptions, savePassKey } from '$lib/server/admin_pb';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
@@ -20,9 +18,11 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 	const publicKeyCredential: RegistrationResponseJSON = data.publicKeyCredential;
 
 	try {
-		const options: PublicKeyCredentialCreationOptionsJSON = (
-			await pb.collection('webauthn_options').getFirstListItem(`username="${username}"`)
-		).options;
+		const webAuthnOptionsRecord = await pb
+			.collection('webauthn_options')
+			.getFirstListItem(`username="${username}"`);
+
+		const options: PublicKeyCredentialCreationOptionsJSON = webAuthnOptionsRecord.options;
 
 		let verification = await verifyRegistrationResponse({
 			response: publicKeyCredential,
@@ -37,12 +37,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 			registrationInfo!;
 
 		if (verified) {
-			// example create data
-
-			const password = generator.generate({
-				length: 24,
-				numbers: true
-			});
+			let password = generatePassword(24);
 
 			const data = {
 				username,
@@ -52,7 +47,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 
 			const userRecord = await pb.collection('users').create(data);
 
-			const newPasskey: Passkey = {
+			const newPasskeyData = {
 				// `user` here is from Step 2
 				user: userRecord.id,
 				// Created by `generateRegistrationOptions()` in Step 1
@@ -71,9 +66,9 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 				transports: publicKeyCredential.response.transports
 			};
 
-			console.log('Passkey ', newPasskey);
+			savePassKey(newPasskeyData); // add passkey to db
 
-			const passkeyRecord = await pb.collection('passkeys').create(newPasskey);
+			deleteWebAuthnOptions(webAuthnOptionsRecord.id); // remove the options from webauthn_options table
 		}
 	} catch (e) {
 		console.error(e);
