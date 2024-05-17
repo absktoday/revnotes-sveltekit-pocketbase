@@ -1,17 +1,31 @@
-// import { randomBytes } from 'crypto';
+const characters =
+	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
 
-// const characters =
-// 	'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+function generatePassword(length: number): string {
+	const characterCount = characters.length;
+	let password = '';
 
-// function generatePassword(length: number): string {
-// 	let password = '';
-// 	const characterCount = characters.length;
-// 	for (let i = 0; i < length; i++) {
-// 		const randomValue = randomBytes(1)[0];
-// 		const index = randomValue % characterCount;
-// 		password += characters.charAt(index);
-// 	}
-// 	return password;
-// }
+	for (let i = 0; i < length; i++) {
+		const randomIndex = Math.floor(Math.random() * characterCount);
+		password += characters.charAt(randomIndex);
+	}
 
-// export default generatePassword;
+	return password;
+}
+
+function generateSecurePassword(length: number): string {
+	const characterCount = characters.length;
+	let password = '';
+
+	const randomValues = new Uint32Array(length);
+	window.crypto.getRandomValues(randomValues);
+
+	for (let i = 0; i < length; i++) {
+		const randomIndex = randomValues[i] % characterCount;
+		password += characters.charAt(randomIndex);
+	}
+
+	return password;
+}
+
+export default generatePassword;
