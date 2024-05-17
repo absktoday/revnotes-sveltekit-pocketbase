@@ -8,8 +8,8 @@ import type {
 	RegistrationResponseJSON
 } from '@simplewebauthn/types';
 import { fromUint8Array } from 'js-base64';
-import generatePassword from '$lib';
 import { deleteWebAuthnOptions, savePassKey } from '$lib/server/admin_pb';
+import generatePassword from '$lib/server';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
