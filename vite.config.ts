@@ -6,9 +6,6 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 export default defineConfig({
 	optimizeDeps: {
 		esbuildOptions: {
-			define: {
-				global: 'globalThis'
-			},
 			plugins: [NodeGlobalsPolyfillPlugin()]
 		}
 	},
