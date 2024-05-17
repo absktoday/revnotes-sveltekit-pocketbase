@@ -8,11 +8,15 @@
 	let username: string;
 	let nonce: string;
 
-	onMount(async () => {
-		nonce = generateNonce();
-	});
+	// onMount(async () => {
+	// 	nonce = generateNonce();
+	// });
 
-	const submitForm: SubmitFunction = () => {
+	const submitForm: SubmitFunction = ({ formData }) => {
+		nonce = generateNonce();
+		formData.set('nonce', nonce);
+		console.log('form data', formData);
+
 		return async ({ result, update }) => {
 			switch (result.type) {
 				case 'error':

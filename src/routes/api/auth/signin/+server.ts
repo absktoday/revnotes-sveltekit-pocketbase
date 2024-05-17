@@ -54,8 +54,6 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 		if (verified) {
 			const userAuth = await signInUserViaAdmin(passkey.user);
 
-			console.log('user Auth ', userAuth);
-
 			pb.authStore.save(userAuth?.token!, userAuth?.record);
 
 			// const userRecord = await pb.collection('users').create(data);
