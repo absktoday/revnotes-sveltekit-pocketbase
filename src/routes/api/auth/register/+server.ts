@@ -12,6 +12,7 @@ import type {
 } from '@simplewebauthn/types';
 import { fromUint8Array } from 'js-base64';
 import generatePassword from '$lib';
+import { deleteWebAuthnOptions } from '$lib/server/admin_pb';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
@@ -20,9 +21,11 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 	const publicKeyCredential: RegistrationResponseJSON = data.publicKeyCredential;
 
 	try {
-		const options: PublicKeyCredentialCreationOptionsJSON = (
-			await pb.collection('webauthn_options').getFirstListItem(`username="${username}"`)
-		).options;
+		const webAuthnOptionsRecord = await pb
+			.collection('webauthn_options')
+			.getFirstListItem(`username="${username}"`);
+
+		const options: PublicKeyCredentialCreationOptionsJSON = webAuthnOptionsRecord.options;
 
 		let verification = await verifyRegistrationResponse({
 			response: publicKeyCredential,
@@ -37,8 +40,6 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 			registrationInfo!;
 
 		if (verified) {
-			// example create data
-
 			let password = generatePassword(24);
 
 			const data = {
@@ -68,9 +69,9 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 				transports: publicKeyCredential.response.transports
 			};
 
-			console.log('Passkey ', newPasskey);
-
 			const passkeyRecord = await pb.collection('passkeys').create(newPasskey);
+
+			deleteWebAuthnOptions(webAuthnOptionsRecord.id);
 		}
 	} catch (e) {
 		console.error(e);

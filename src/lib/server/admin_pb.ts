@@ -1,5 +1,6 @@
 import { ADMIN_PASSWORD, ADMIN_USERNAME } from '$env/static/private';
 import { PUBLIC_POCKETBASE_URL } from '$env/static/public';
+import type { WebAuthnOptions } from '$lib/pb_table_models';
 import PocketBase, {
 	ClientResponseError,
 	type RecordAuthResponse,
@@ -40,4 +41,12 @@ const signInUserViaAdmin = async (
 	}
 };
 
-export { usernameExists, signInUserViaAdmin };
+const saveWebAuthnOptions = async (options: WebAuthnOptions) => {
+	await adminPb.collection('webauthn_options').create(options);
+};
+
+const deleteWebAuthnOptions = async (webauthnOptionRecordId: string) => {
+	await adminPb.collection('webauthn_options').delete(webauthnOptionRecordId);
+};
+
+export { usernameExists, signInUserViaAdmin, saveWebAuthnOptions, deleteWebAuthnOptions };

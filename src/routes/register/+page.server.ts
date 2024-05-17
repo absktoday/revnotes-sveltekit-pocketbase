@@ -3,14 +3,15 @@ import type { Actions, PageServerLoad } from './$types';
 import { webauthn } from '$lib/server/webauthn';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
-import { usernameExists } from '$lib/server/admin_pb';
+import { saveWebAuthnOptions, usernameExists } from '$lib/server/admin_pb';
+import type { WebAuthnOptions } from '$lib/pb_table_models';
 
 export const load: PageServerLoad = async ({ locals: { user } }) => {
 	if (user) redirect(307, '/secure/dashboard');
 };
 
 export const actions = {
-	default: async ({ request, locals: { pb } }) => {
+	default: async ({ request }) => {
 		const data = await request.formData();
 		const username = data.get('username') as string;
 
@@ -28,12 +29,20 @@ export const actions = {
 			userName: username
 		});
 
-		const recordData = {
+		const recordData: WebAuthnOptions = {
 			username,
 			options
 		};
 
-		const record = await pb.collection('webauthn_options').create(recordData);
+		try {
+			saveWebAuthnOptions(recordData);
+		} catch (e) {
+			console.error(e);
+			fail(400, {
+				error: true,
+				message: 'Unable to save passkey options please contact your admin.'
+			});
+		}
 
 		return options;
 	}
