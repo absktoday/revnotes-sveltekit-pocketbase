@@ -1,7 +1,6 @@
 import { purgeCss } from 'vite-plugin-tailwind-purgecss';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
 	server: {
@@ -13,5 +12,5 @@ export default defineConfig({
 		},
 		proxy: {}
 	},
-	plugins: [sveltekit(), purgeCss(), nodePolyfills({ protocolImports: true })]
+	plugins: [sveltekit(), purgeCss()]
 });
