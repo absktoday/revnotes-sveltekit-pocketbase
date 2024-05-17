@@ -8,13 +8,14 @@ import type {
 	PublicKeyCredentialRequestOptionsJSON
 } from '@simplewebauthn/types';
 import { toUint8Array } from 'js-base64';
-import generatePassword from '$lib';
+
 import {
 	deleteWebAuthnOptions,
 	getUserPasskey,
 	savePassKey,
 	signInUserViaAdmin
 } from '$lib/server/admin_pb';
+import generatePassword from '$lib/server';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
