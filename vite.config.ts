@@ -13,5 +13,5 @@ export default defineConfig({
 		},
 		proxy: {}
 	},
-	plugins: [nodePolyfills({ include: ['path'] }), sveltekit(), purgeCss()]
+	plugins: [nodePolyfills({ include: ['path'], protocolImports: true }), sveltekit(), purgeCss()]
 });
