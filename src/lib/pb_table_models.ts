@@ -1,6 +1,9 @@
-import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
+import type {
+	PublicKeyCredentialCreationOptionsJSON,
+	PublicKeyCredentialRequestOptionsJSON
+} from '@simplewebauthn/types';
 
 export type WebAuthnOptions = {
 	username: string;
-	options: PublicKeyCredentialCreationOptionsJSON;
+	options: PublicKeyCredentialCreationOptionsJSON | PublicKeyCredentialRequestOptionsJSON;
 };

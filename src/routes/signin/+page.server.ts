@@ -1,5 +1,9 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { generateAuthenticationOptions } from '@simplewebauthn/server';
+import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types';
+import { webauthn } from '$lib/server/webauthn';
+import { saveWebAuthnOptions } from '$lib/server/admin_pb';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (locals.user) redirect(307, '/secure/dashboard');
@@ -8,14 +12,20 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions = {
 	default: async ({ request, locals: { pb } }) => {
 		const formData = await request.formData();
-		const email = formData.get('email') as string;
-		const password = formData.get('password') as string;
+		const username = formData.get('username') as string;
+		const nonce = formData.get('nonce') as string;
 
-		if (email.length < 1) return fail(400, { message: 'Please enter you email' });
-		const { token, record } = await pb.collection('users').authWithPassword(email, password);
+		console.log('username ', username);
+		console.log('nonce ', nonce);
 
-		if (token === null || record === null) return fail(400, { message: 'Unable to sign in' });
+		const options: PublicKeyCredentialRequestOptionsJSON = await generateAuthenticationOptions({
+			rpID: webauthn.rpID
+		});
 
-		return { success: true };
+		console.log('Options ', options);
+
+		saveWebAuthnOptions({ username: nonce, options });
+
+		return options;
 	}
 } satisfies Actions;

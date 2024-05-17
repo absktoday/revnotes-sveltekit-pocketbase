@@ -26,7 +26,8 @@ export const actions = {
 		const options: PublicKeyCredentialCreationOptionsJSON = await generateRegistrationOptions({
 			rpName: webauthn.rpName,
 			rpID: webauthn.rpID,
-			userName: username
+			userName: username,
+			userDisplayName: username
 		});
 
 		const recordData: WebAuthnOptions = {

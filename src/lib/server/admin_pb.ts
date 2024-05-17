@@ -6,6 +6,7 @@ import PocketBase, {
 	type RecordAuthResponse,
 	type RecordModel
 } from 'pocketbase';
+import type { Passkey } from '../../ambient';
 
 // setup admin pb instance
 let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
@@ -49,4 +50,14 @@ const deleteWebAuthnOptions = async (webauthnOptionRecordId: string) => {
 	await adminPb.collection('webauthn_options').delete(webauthnOptionRecordId);
 };
 
-export { usernameExists, signInUserViaAdmin, saveWebAuthnOptions, deleteWebAuthnOptions };
+const savePassKey = async (passkey: Passkey) => {
+	await adminPb.collection('passkeys').create(passkey);
+};
+
+export {
+	usernameExists,
+	signInUserViaAdmin,
+	saveWebAuthnOptions,
+	deleteWebAuthnOptions,
+	savePassKey
+};

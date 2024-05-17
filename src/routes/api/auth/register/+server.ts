@@ -1,8 +1,5 @@
 import { webauthn } from '$lib/server/webauthn';
-import {
-	verifyRegistrationResponse,
-	type VerifiedRegistrationResponse
-} from '@simplewebauthn/server';
+import { verifyRegistrationResponse } from '@simplewebauthn/server';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 import type { Passkey } from '../../../../ambient';
@@ -12,7 +9,7 @@ import type {
 } from '@simplewebauthn/types';
 import { fromUint8Array } from 'js-base64';
 import generatePassword from '$lib';
-import { deleteWebAuthnOptions } from '$lib/server/admin_pb';
+import { deleteWebAuthnOptions, savePassKey } from '$lib/server/admin_pb';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
@@ -69,9 +66,9 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 				transports: publicKeyCredential.response.transports
 			};
 
-			const passkeyRecord = await pb.collection('passkeys').create(newPasskey);
+			savePassKey(newPasskey); // add passkey to db
 
-			deleteWebAuthnOptions(webAuthnOptionsRecord.id);
+			deleteWebAuthnOptions(webAuthnOptionsRecord.id); // remove the options from webauthn_options table
 		}
 	} catch (e) {
 		console.error(e);
