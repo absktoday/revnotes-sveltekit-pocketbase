@@ -15,7 +15,6 @@
 		"test:unit": "vitest"
 	},
 	"devDependencies": {
-		"@esbuild-plugins/node-globals-polyfill": "^0.2.3",
 		"@playwright/test": "^1.28.1",
 		"@simplewebauthn/types": "^10.0.0",
 		"@skeletonlabs/skeleton": "2.9.2",
