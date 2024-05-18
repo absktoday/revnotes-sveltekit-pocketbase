@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 		console.error(e);
 		if (e instanceof ClientResponseError) {
 			console.log('Pocketbase error ', e);
-			error(400, 'Request invalid. Please try again');
+			error(400, `Request invalid. Please try again. Message: ${e.message}`);
 		}
 		if (e instanceof Error) {
 			error(400, e.message);
