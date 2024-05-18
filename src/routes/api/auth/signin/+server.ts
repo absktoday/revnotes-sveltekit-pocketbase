@@ -14,6 +14,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 	const data = await request.json();
 
 	const username: string = data.username;
+	const nonce: string = data.nonce;
 	const authResp: AuthenticationResponseJSON = data.publicKeyCredential;
 
 	try {
