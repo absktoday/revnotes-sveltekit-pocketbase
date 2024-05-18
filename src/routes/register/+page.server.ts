@@ -29,7 +29,10 @@ export const actions = {
 			rpName: webauthn.rpName,
 			rpID: webauthn.rpID,
 			userName: username,
-			userDisplayName: username
+			userDisplayName: username,
+			authenticatorSelection: {
+				residentKey: 'required'
+			}
 		});
 
 		const recordData: WebAuthnOptions = {

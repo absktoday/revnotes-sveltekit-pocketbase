@@ -16,7 +16,7 @@
 					await fetch('/api/auth/signin', {
 						method: 'POST',
 						body: JSON.stringify({
-							username,
+							// username,
 							publicKeyCredential
 						}),
 						headers: {
@@ -40,7 +40,7 @@
 			<h1 class="h2">Sign In</h1>
 		</header>
 		<form method="POST" class="p-4 space-y-5" use:enhance={submitForm}>
-			<label class="label">
+			<!-- <label class="label">
 				<span>Username</span>
 				<input
 					class="input"
@@ -50,7 +50,7 @@
 					placeholder="john.doe (Optional)"
 					bind:value={username}
 				/>
-			</label>
+			</label> -->
 			<button type="submit" class="btn variant-filled w-full">
 				<span>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-6" {...$$props}>
