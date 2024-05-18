@@ -2,25 +2,33 @@ import { webauthn } from '$lib/server/webauthn';
 import { verifyRegistrationResponse } from '@simplewebauthn/server';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
-import type { Passkey } from '../../../../ambient';
 import type {
 	PublicKeyCredentialCreationOptionsJSON,
 	RegistrationResponseJSON
 } from '@simplewebauthn/types';
 import { fromUint8Array } from 'js-base64';
-import { deleteWebAuthnOptions, savePassKey } from '$lib/server/admin_pb';
 import generatePassword from '$lib';
+import { decode } from 'js-base64';
+import PocketBase from 'pocketbase';
+import { PUBLIC_POCKETBASE_URL } from '$env/static/public';
+import { ADMIN_PASSWORD, ADMIN_USERNAME } from '$env/static/private';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
+
+	// Init Admin PB instance
+	let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
+	let adminAuth = adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
 
 	const username = data.username;
 	const publicKeyCredential: RegistrationResponseJSON = data.publicKeyCredential;
 
 	try {
+		let challenge = JSON.parse(decode(publicKeyCredential.response.clientDataJSON)).challenge;
+
 		const webAuthnOptionsRecord = await pb
 			.collection('webauthn_options')
-			.getFirstListItem(`username="${username}"`);
+			.getFirstListItem(`challenge="${challenge}"`);
 
 		const options: PublicKeyCredentialCreationOptionsJSON = webAuthnOptionsRecord.options;
 
@@ -66,9 +74,11 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 				transports: publicKeyCredential.response.transports
 			};
 
-			savePassKey(newPasskeyData); // add passkey to db
+			await adminAuth;
 
-			deleteWebAuthnOptions(webAuthnOptionsRecord.id); // remove the options from webauthn_options table
+			await adminPb.collection('passkeys').create(newPasskeyData); // add passkey to db
+
+			await adminPb.collection('webauthn_options').delete(webAuthnOptionsRecord.id); // remove the options from webauthn_options table
 		}
 	} catch (e) {
 		console.error(e);
