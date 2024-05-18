@@ -41,8 +41,6 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 			}
 		});
 
-		console.log('veri ', verification);
-
 		let { verified, authenticationInfo } = verification;
 
 		const { newCounter } = authenticationInfo!;
@@ -52,6 +50,8 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 
 			pb.authStore.save(userAuth?.token!, userAuth?.record);
 		}
+
+		return json({ verified });
 	} catch (e) {
 		console.error(e);
 		if (e instanceof ClientResponseError) {
@@ -62,6 +62,5 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 			error(400, e.message);
 		}
 	}
-
-	return json({ success: true });
+	error(400, 'Could Not Complete Sign In Request. Please Contact Admin.');
 };
