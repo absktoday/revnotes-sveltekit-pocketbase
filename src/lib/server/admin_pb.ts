@@ -45,7 +45,7 @@ const signInUserViaAdmin = async (
 };
 
 const saveWebAuthnOptions = async (options: WebAuthnOptions) => {
-	await adminPb.collection('webauthn_options').create(options);
+	return await adminPb.collection('webauthn_options').create(options);
 };
 
 const deleteWebAuthnOptions = async (webauthnOptionRecordId: string) => {

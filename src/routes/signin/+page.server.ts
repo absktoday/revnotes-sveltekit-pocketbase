@@ -22,7 +22,7 @@ export const actions = {
 
 		console.log('Options ', options);
 
-		saveWebAuthnOptions({ challenge: options.challenge, options });
+		await saveWebAuthnOptions({ challenge: options.challenge, options });
 
 		return options;
 	}

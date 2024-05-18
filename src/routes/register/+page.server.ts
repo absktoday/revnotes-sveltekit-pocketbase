@@ -31,7 +31,7 @@ export const actions = {
 		});
 
 		const recordData: WebAuthnOptions = {
-			username,
+			challenge: options.challenge,
 			options
 		};
 
