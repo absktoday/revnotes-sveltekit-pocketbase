@@ -8,13 +8,13 @@ import PocketBase, {
 } from 'pocketbase';
 import type { Passkey } from '../../ambient';
 
-// Setup admin pb instance
-let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
-await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
-
 // Check if Username Already Registered
 const usernameExists = async (username: string): Promise<boolean> => {
 	try {
+		// Setup admin pb instance
+		let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
+		await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
+
 		const user = await adminPb.collection('users').getFirstListItem(`username="${username}"`);
 		if (user) return true;
 	} catch (e) {
@@ -31,6 +31,10 @@ const signInUserViaAdmin = async (
 	userId: string
 ): Promise<RecordAuthResponse<RecordModel> | undefined> => {
 	try {
+		// Setup admin pb instance
+		let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
+		await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
+
 		const record = await adminPb.collection('users').getOne(userId);
 
 		let auth: RecordAuthResponse<RecordModel> = await adminPb.send('getTokenForUser', {
@@ -45,18 +49,31 @@ const signInUserViaAdmin = async (
 };
 
 const saveWebAuthnOptions = async (options: WebAuthnOptions) => {
+	// Setup admin pb instance
+	let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
+	await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
+
 	return await adminPb.collection('webauthn_options').create(options);
 };
 
 const deleteWebAuthnOptions = async (webauthnOptionRecordId: string) => {
+	// Setup admin pb instance
+	let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
+	await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
 	await adminPb.collection('webauthn_options').delete(webauthnOptionRecordId);
 };
 
 const savePassKey = async (passkey: {}) => {
+	// Setup admin pb instance
+	let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
+	await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
 	await adminPb.collection('passkeys').create(passkey);
 };
 
 const getUserPasskey = async (credId: string): Promise<Passkey> => {
+	// Setup admin pb instance
+	let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
+	await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
 	return await adminPb.collection('passkeys').getFirstListItem(`cred_id="${credId}"`);
 };
 
