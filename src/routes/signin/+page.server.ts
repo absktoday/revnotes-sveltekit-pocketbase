@@ -14,11 +14,15 @@ export const actions = {
 		const formData = await request.formData();
 		const username = formData.get('username') as string;
 
+		console.log('username ', username);
+
 		const options: PublicKeyCredentialRequestOptionsJSON = await generateAuthenticationOptions({
 			rpID: webauthn.rpID
 		});
 
-		await pb.collection('webauthn_options').create({ challenge: options.challenge, options });
+		console.log('Options ', options);
+
+		await saveWebAuthnOptions({ challenge: options.challenge, options });
 
 		return options;
 	}
