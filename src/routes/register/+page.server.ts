@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { webauthn } from '$lib/server/webauthn';
 import { generateRegistrationOptions } from '@simplewebauthn/server';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
-import { saveWebAuthnOptions, usernameExists } from '$lib/server/admin_pb';
+import { usernameExists } from '$lib/server/admin_pb';
 import type { WebAuthnOptions } from '$lib/pb_table_models';
 import PocketBase from 'pocketbase';
 import { PUBLIC_POCKETBASE_URL } from '$env/static/public';
