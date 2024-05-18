@@ -18,7 +18,7 @@ function generateSecurePassword(length: number): string {
 	let password = '';
 
 	const randomValues = new Uint32Array(length);
-	window.crypto.getRandomValues(randomValues);
+	globalThis.crypto.getRandomValues(randomValues);
 
 	for (let i = 0; i < length; i++) {
 		const randomIndex = randomValues[i] % characterCount;
@@ -28,4 +28,4 @@ function generateSecurePassword(length: number): string {
 	return password;
 }
 
-export default generatePassword;
+export { generatePassword, generateSecurePassword };

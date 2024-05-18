@@ -75,6 +75,7 @@
 					bind:value={username}
 					type="text"
 					placeholder="john.doe"
+					autocomplete="username"
 					required
 				/>
 			</label>

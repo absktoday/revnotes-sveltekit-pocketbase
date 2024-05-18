@@ -7,11 +7,11 @@ import type {
 	RegistrationResponseJSON
 } from '@simplewebauthn/types';
 import { fromUint8Array } from 'js-base64';
-import generatePassword from '$lib';
 import { decode } from 'js-base64';
 import PocketBase from 'pocketbase';
 import { PUBLIC_POCKETBASE_URL } from '$env/static/public';
 import { ADMIN_PASSWORD, ADMIN_USERNAME } from '$env/static/private';
+import { generatePassword, generateSecurePassword } from '$lib';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 			registrationInfo!;
 
 		if (verified) {
-			let password = generatePassword(24);
+			let password = generateSecurePassword(24);
 
 			const data = {
 				username,
