@@ -18,8 +18,6 @@ export const actions = {
 			rpID: webauthn.rpID
 		});
 
-		console.log(pb);
-
 		await pb.collection('webauthn_options').create({ challenge: options.challenge, options });
 
 		return options;
