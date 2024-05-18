@@ -7,33 +7,29 @@ import type {
 	AuthenticationResponseJSON,
 	PublicKeyCredentialRequestOptionsJSON
 } from '@simplewebauthn/types';
-import { toUint8Array } from 'js-base64';
-
-import {
-	deleteWebAuthnOptions,
-	getUserPasskey,
-	savePassKey,
-	signInUserViaAdmin
-} from '$lib/server/admin_pb';
+import { toUint8Array, decode } from 'js-base64';
+import { getUserPasskey, signInUserViaAdmin } from '$lib/server/admin_pb';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
 
 	const username: string = data.username;
 	const nonce: string = data.nonce;
-	const publicKeyCredential: AuthenticationResponseJSON = data.publicKeyCredential;
+	const authResp: AuthenticationResponseJSON = data.publicKeyCredential;
 
 	try {
+		let challenge = JSON.parse(decode(authResp.response.clientDataJSON)).challenge;
+
 		const webAuthnOptionsRecord = await pb
 			.collection('webauthn_options')
-			.getFirstListItem(`username="${nonce}"`);
+			.getFirstListItem(`challenge="${challenge}"`);
 
-		const passkey: Passkey = await getUserPasskey(publicKeyCredential.id);
+		const passkey: Passkey = await getUserPasskey(authResp.id);
 
 		const options: PublicKeyCredentialRequestOptionsJSON = webAuthnOptionsRecord.options;
 
 		let verification = await verifyAuthenticationResponse({
-			response: publicKeyCredential,
+			response: authResp,
 			expectedChallenge: options.challenge,
 			expectedOrigin: url.origin,
 			expectedRPID: webauthn.rpID,
@@ -55,31 +51,6 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 			const userAuth = await signInUserViaAdmin(passkey.user);
 
 			pb.authStore.save(userAuth?.token!, userAuth?.record);
-
-			// const userRecord = await pb.collection('users').create(data);
-
-			// const newPasskey: Passkey = {
-			// 	// `user` here is from Step 2
-			// 	user: userRecord.id,
-			// 	// Created by `generateRegistrationOptions()` in Step 1
-			// 	webauthnUserID: options.user.id,
-			// 	// A unique identifier for the credential
-			// 	cred_id: credentialID,
-			// 	// The public key bytes, used for subsequent authentication signature verification
-			// 	publicKey: fromUint8Array(credentialPublicKey),
-			// 	// The number of times the authenticator has been used on this site so far
-			// 	counter,
-			// 	// Whether the passkey is single-device or multi-device
-			// 	deviceType: credentialDeviceType,
-			// 	// Whether the passkey has been backed up in some way
-			// 	backedUp: credentialBackedUp,
-			// 	// `body` here is from Step 2
-			// 	transports: publicKeyCredential.response.transports
-			// };
-
-			// savePassKey(newPasskey); // add passkey to db
-
-			// deleteWebAuthnOptions(webAuthnOptionsRecord.id); // remove the options from webauthn_options table
 		}
 	} catch (e) {
 		console.error(e);

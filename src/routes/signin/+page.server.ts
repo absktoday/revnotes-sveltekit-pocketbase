@@ -13,10 +13,8 @@ export const actions = {
 	default: async ({ request, locals: { pb } }) => {
 		const formData = await request.formData();
 		const username = formData.get('username') as string;
-		const nonce = formData.get('nonce') as string;
 
 		console.log('username ', username);
-		console.log('nonce ', nonce);
 
 		const options: PublicKeyCredentialRequestOptionsJSON = await generateAuthenticationOptions({
 			rpID: webauthn.rpID
@@ -24,7 +22,7 @@ export const actions = {
 
 		console.log('Options ', options);
 
-		saveWebAuthnOptions({ username: nonce, options });
+		saveWebAuthnOptions({ challenge: options.challenge, options });
 
 		return options;
 	}

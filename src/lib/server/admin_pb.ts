@@ -8,7 +8,7 @@ import PocketBase, {
 } from 'pocketbase';
 import type { Passkey } from '../../ambient';
 
-// setup admin pb instance
+// Setup admin pb instance
 let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
 await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
 

@@ -4,6 +4,6 @@ import type {
 } from '@simplewebauthn/types';
 
 export type WebAuthnOptions = {
-	username: string;
+	challenge: string;
 	options: PublicKeyCredentialCreationOptionsJSON | PublicKeyCredentialRequestOptionsJSON;
 };

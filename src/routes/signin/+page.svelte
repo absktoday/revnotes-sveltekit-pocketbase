@@ -2,55 +2,27 @@
 	import { enhance } from '$app/forms';
 	import { startAuthentication } from '@simplewebauthn/browser';
 	import type { SubmitFunction } from './$types';
-	import { onMount } from 'svelte';
-	import { generateNonce } from '$lib/utils';
 
 	let username: string;
-	let nonce: string;
 
-	// onMount(async () => {
-	// 	nonce = generateNonce();
-	// });
-
-	const submitForm: SubmitFunction = ({ formData }) => {
-		nonce = generateNonce();
-		formData.set('nonce', nonce);
-		console.log('form data', formData);
-
+	const submitForm: SubmitFunction = () => {
 		return async ({ result, update }) => {
 			switch (result.type) {
 				case 'error':
 					console.log('error');
 					break;
 				case 'success':
-					console.log('result ');
 					let publicKeyCredential = await startAuthentication(result.data!);
-
-					console.log('pub ', publicKeyCredential);
-
 					await fetch('/api/auth/signin', {
 						method: 'POST',
 						body: JSON.stringify({
 							username,
-							nonce,
 							publicKeyCredential
 						}),
 						headers: {
 							'Content-Type': 'application/json'
 						}
 					});
-
-					// const t: ToastSettings = {
-					// 	message: 'Registration Successful.',
-					// 	background: 'variant-filled-success',
-					// 	action: {
-					// 		label: 'Sign In',
-					// 		response: () => goto('/signin')
-					// 	},
-					// 	hoverable: true
-					// };
-
-					// toastStore.trigger(t);
 					break;
 			}
 			await update();
@@ -78,7 +50,6 @@
 					placeholder="john.doe (Optional)"
 					bind:value={username}
 				/>
-				<input type="text" name="nonce" bind:value={nonce} hidden />
 			</label>
 			<button type="submit" class="btn variant-filled w-full">
 				<span>
