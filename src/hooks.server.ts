@@ -1,9 +1,11 @@
 // src/hooks.server.ts
+import { ADMIN_PASSWORD, ADMIN_USERNAME } from '$env/static/private';
 import { PUBLIC_POCKETBASE_URL } from '$env/static/public';
 import { redirect, type Handle } from '@sveltejs/kit';
 import PocketBase from 'pocketbase';
 
 export const handle: Handle = async ({ event, resolve }) => {
+	// Init User PB instance
 	event.locals.pb = new PocketBase(PUBLIC_POCKETBASE_URL);
 
 	// load the store data from the request cookie string

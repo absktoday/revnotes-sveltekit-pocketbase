@@ -1,17 +1,21 @@
 import { webauthn } from '$lib/server/webauthn';
 import { verifyAuthenticationResponse } from '@simplewebauthn/server';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import { ClientResponseError } from 'pocketbase';
+import { ClientResponseError, type RecordAuthResponse, type RecordModel } from 'pocketbase';
 import type { Passkey } from '../../../../ambient';
 import type {
 	AuthenticationResponseJSON,
 	PublicKeyCredentialRequestOptionsJSON
 } from '@simplewebauthn/types';
 import { toUint8Array, decode } from 'js-base64';
-import { getUserPasskey, signInUserViaAdmin } from '$lib/server/admin_pb';
+import { ADMIN_USERNAME, ADMIN_PASSWORD } from '$env/static/private';
+import { PUBLIC_POCKETBASE_URL } from '$env/static/public';
+import PocketBase from 'pocketbase';
 
 export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => {
 	const data = await request.json();
+	// Init Admin PB instance
+	let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
 
 	const username: string = data.username;
 	const nonce: string = data.nonce;
@@ -24,7 +28,11 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 			.collection('webauthn_options')
 			.getFirstListItem(`challenge="${challenge}"`);
 
-		const passkey: Passkey = await getUserPasskey(authResp.id);
+		await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
+
+		const passkey: Passkey = await adminPb
+			.collection('passkeys')
+			.getFirstListItem(`cred_id="${authResp.id}"`);
 
 		const options: PublicKeyCredentialRequestOptionsJSON = webAuthnOptionsRecord.options;
 
@@ -46,7 +54,12 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 		const { newCounter } = authenticationInfo!;
 
 		if (verified) {
-			const userAuth = await signInUserViaAdmin(passkey.user);
+			const record = await adminPb.collection('users').getOne(passkey.user);
+
+			let userAuth: RecordAuthResponse<RecordModel> = await adminPb.send('getTokenForUser', {
+				method: 'POST',
+				body: { username: record.username }
+			});
 
 			pb.authStore.save(userAuth?.token!, userAuth?.record);
 		}
