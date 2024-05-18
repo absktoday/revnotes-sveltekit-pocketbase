@@ -5,6 +5,8 @@ import { generateRegistrationOptions } from '@simplewebauthn/server';
 import type { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
 import { saveWebAuthnOptions, usernameExists } from '$lib/server/admin_pb';
 import type { WebAuthnOptions } from '$lib/pb_table_models';
+import PocketBase from 'pocketbase';
+import { PUBLIC_POCKETBASE_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ locals: { user } }) => {
 	if (user) redirect(307, '/secure/dashboard');
@@ -36,7 +38,8 @@ export const actions = {
 		};
 
 		try {
-			saveWebAuthnOptions(recordData);
+			const pb = new PocketBase(PUBLIC_POCKETBASE_URL);
+			await pb.collection('webauthn_options').create({ challenge: options.challenge, options });
 		} catch (e) {
 			console.error(e);
 			fail(400, {
