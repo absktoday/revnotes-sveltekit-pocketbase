@@ -16,23 +16,17 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 	const data = await request.json();
 	// Init Admin PB instance
 	let adminPb = new PocketBase(PUBLIC_POCKETBASE_URL);
+	let adminAuth = adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
 
-	const username: string = data.username;
-	const nonce: string = data.nonce;
 	const authResp: AuthenticationResponseJSON = data.publicKeyCredential;
 
 	try {
 		let challenge = JSON.parse(decode(authResp.response.clientDataJSON)).challenge;
 
-		const webAuthnOptionsRecord = await pb
-			.collection('webauthn_options')
-			.getFirstListItem(`challenge="${challenge}"`);
-
-		await adminPb.admins.authWithPassword(ADMIN_USERNAME, ADMIN_PASSWORD);
-
-		const passkey: Passkey = await adminPb
-			.collection('passkeys')
-			.getFirstListItem(`cred_id="${authResp.id}"`);
+		const [webAuthnOptionsRecord, passkey] = await Promise.all([
+			pb.collection('webauthn_options').getFirstListItem(`challenge="${challenge}"`),
+			pb.collection('passkeys').getFirstListItem(`cred_id="${authResp.id}"`)
+		]);
 
 		const options: PublicKeyCredentialRequestOptionsJSON = webAuthnOptionsRecord.options;
 
@@ -54,6 +48,8 @@ export const POST: RequestHandler = async ({ request, url, locals: { pb } }) => 
 		const { newCounter } = authenticationInfo!;
 
 		if (verified) {
+			await adminAuth;
+
 			const record = await adminPb.collection('users').getOne(passkey.user);
 
 			let userAuth: RecordAuthResponse<RecordModel> = await adminPb.send('getTokenForUser', {
